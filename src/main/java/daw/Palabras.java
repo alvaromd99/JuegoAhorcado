@@ -4,6 +4,7 @@
  */
 package daw;
 
+import java.text.Normalizer;
 import java.util.Random;
 
 /**
@@ -11,12 +12,22 @@ import java.util.Random;
  * @author alvaro
  */
 public class Palabras {
+
     public static String getRandomWord() {
         Random rd = new Random();
-        
+
         return wordsArr[rd.nextInt(0, wordsArr.length)];
     }
-    
+
+    public static String eliminarAcentos(String input) {
+        if (input == null) {
+            return null;
+        }
+        // Normalizar a la forma "NFD" y eliminar los caracteres diacríticos.
+        return Normalizer.normalize(input, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+    }
+
     public static String[] wordsArr = {
         "ábaco",
         "abdomen",

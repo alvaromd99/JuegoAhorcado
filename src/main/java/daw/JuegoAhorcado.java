@@ -39,12 +39,15 @@ public class JuegoAhorcado {
                 case 1 ->
                     System.out.println("Op 1");
                 case 2 -> {
-                    wordToGuess = Palabras.getRandomWord();
+                    wordToGuess = Palabras.
+                            eliminarAcentos(Palabras.getRandomWord());
                     vowel = getFirstVowel(wordToGuess);
                     userWord = hideWordToGuess(wordToGuess, vowel);
                     
                     System.out.println(wordToGuess);
                     System.out.println(userWord);
+                    
+                    playGame(wordToGuess, userWord);
                 }
                 case 3 ->
                     System.out.println("Hasta luego");
@@ -52,6 +55,45 @@ public class JuegoAhorcado {
                     JOptionPane.showMessageDialog(null, "Opcion invalida");
             }
         } while (opcion != 3 && opcion != Integer.MIN_VALUE);
+    }
+    
+    public static void playGame(String word, String userWord) {
+        int fallos = 0;
+        String text = "", temp = "";
+        char ch = Character.MIN_VALUE;
+        boolean isWord = false;
+        
+        do {
+            do {                
+                text = """
+                   Fallos: %d / 7.
+                   
+                   Estado de la palabra:
+                   %s
+                   
+                   Introduce una letra:
+                   """.formatted(fallos, showStringWithSpaces(userWord));
+                temp = JOptionPane.showInputDialog(text);
+                
+                // Controlamos que le de a cancelar
+                if (Objects.isNull(temp)) {
+                    temp = "";
+                }
+                
+                ch = temp.charAt(0);
+                
+                if (Character.isLetter(ch)) {
+                    isWord = true;
+                    System.out.println("WORD");
+                } else {
+                    JOptionPane.showMessageDialog(null, "No has introducido"
+                            + " una letra.");
+                }
+            } while (!isWord);
+            
+            
+            
+        } while (fallos < 7);
     }
 
     /**
