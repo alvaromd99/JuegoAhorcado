@@ -29,7 +29,7 @@ public class JuegoAhorcado {
         char vowel = Character.MIN_VALUE;
 
         do {
-            opcion = getOption(menu);
+            opcion = getOptionFromUser(menu);
 
             if (opcion == Integer.MIN_VALUE) {
                 break;
@@ -52,33 +52,6 @@ public class JuegoAhorcado {
                     JOptionPane.showMessageDialog(null, "Opcion invalida");
             }
         } while (opcion != 3 && opcion != Integer.MIN_VALUE);
-    }
-
-    /**
-     * Pide al usuario, usando joption, una opcion mostrando un menu
-     *
-     * @param menu el menu que vamos a mostrar
-     * @return el numero entero que representa la opcion que ha elegido el
-     * usuario
-     */
-    public static int getOption(String menu) {
-        String tmp = "";
-        int op = 0;
-
-        tmp = JOptionPane.showInputDialog(menu);
-
-        try {
-            if (Objects.isNull(tmp)) {
-                return Integer.MIN_VALUE;
-            }
-
-            op = Integer.parseInt(tmp);
-
-        } catch (NumberFormatException nfe) {
-            JOptionPane.showMessageDialog(null, "Error, introduce una"
-                    + " opcion valida.");
-        }
-        return op;
     }
 
     /**
@@ -118,6 +91,41 @@ public class JuegoAhorcado {
             }
         }
         return res;
+    }
+    
+    /**
+     * Pide al usuario, usando joption, una opcion mostrando un menu
+     *
+     * @param menu el menu que vamos a mostrar
+     * @return el numero entero que representa la opcion que ha elegido el
+     * usuario
+     */
+    public static int getOptionFromUser(String menu) {
+        String tmp = "";
+        int op = 0;
+
+        tmp = JOptionPane.showInputDialog(menu);
+
+        try {
+            if (Objects.isNull(tmp)) {
+                return Integer.MIN_VALUE;
+            }
+
+            op = Integer.parseInt(tmp);
+
+        } catch (NumberFormatException nfe) {
+            JOptionPane.showMessageDialog(null, "Error, introduce una"
+                    + " opcion valida.");
+        }
+        return op;
+    }
+    
+    public static char getWordFromUser() {
+        String res = "";
+        
+        do {            
+            res = JOptionPane.showInputDialog("Introduzca una letra: ");
+        } while (true);
     }
 
     /**
