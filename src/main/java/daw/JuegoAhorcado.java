@@ -30,15 +30,21 @@ public class JuegoAhorcado {
 
         do {
             opcion = getOption(menu);
-            
-            if (opcion == Integer.MIN_VALUE) break;
-            
+
+            if (opcion == Integer.MIN_VALUE) {
+                break;
+            }
+
             switch (opcion) {
                 case 1 ->
                     System.out.println("Op 1");
                 case 2 -> {
                     wordToGuess = Palabras.getRandomWord();
                     vowel = getFirstVowel(wordToGuess);
+                    userWord = hideWordToGuess(wordToGuess, vowel);
+                    
+                    System.out.println(wordToGuess);
+                    System.out.println(userWord);
                 }
                 case 3 ->
                     System.out.println("Hasta luego");
@@ -74,44 +80,54 @@ public class JuegoAhorcado {
         }
         return op;
     }
-    
+
     /**
      * Devuelve la primera vocal que hay en un string
-     * 
-     * @param str el string donde vamos a buscar la vocal
-     * @return  la primera vocal que hemos encontrado en la palabra o el valor
-     *          minimo de Character si no hemos encontrado vocales
+     *
+     * @param word el string donde vamos a buscar la vocal
+     * @return la primera vocal que hemos encontrado en la palabra o el valor
+     * minimo de Character si no hemos encontrado vocales
      */
-    public static char getFirstVowel(String str) {
-        char ch = Character.MIN_VALUE;
-        
-        for (int i = 0; i < str.length(); i++) {
-            if("AEIOUaeiou".indexOf(str.charAt(i)) != -1) {
-                ch = str.charAt(i);
+    public static char getFirstVowel(String word) {
+        for (int i = 0; i < word.length(); i++) {
+            if ("AEIOUaeiou".indexOf(word.charAt(i)) != -1) {
+                return word.charAt(i);
             }
         }
-        return ch;
+        return Character.MIN_VALUE;
     }
     
-    public static String hideWordToGuess(String str, char vowel) {
+    /**
+     * Devuelve la palabra que pasamos por parametro pero solo mostrando las
+     * vocales que coinciden con la vocal que hemos pasado tambien. Lo demas 
+     * lo pone como "_"
+     * 
+     * @param word la palabra que vamos a usar como referencia
+     * @param vowel la vocal que tenemos que mantener
+     * @return  la palabra solo mostrando la vocal en su posicion conrrespondiente
+     *          que coincide con la palabra
+     */
+    public static String hideWordToGuess(String word, char vowel) {
         String res = "";
         // valueof -> char[] to String
-        for (int i = 0; i < str.length(); i++) {
-            
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) == vowel) {
+                res += vowel;
+            } else {
+                res += "_";
+            }
         }
         return res;
     }
-    
-    
+
     /**
      * Devuelve un string que es la palabra que hemos pasado pero poniendo un
-     * espacio entre cada uno de los caracteres
-     * hola -> h o l a
-     * 
-     * @param str el string que queremos separar
+     * espacio entre cada uno de los caracteres hola -> h o l a
+     *
+     * @param word el string que queremos separar
      * @return el string con espacios entre cada uno de los caracteres
      */
-    public static String showStringWithSpaces(String str) {
-        return String.join(" ", str.split(""));
+    public static String showStringWithSpaces(String word) {
+        return String.join(" ", word.split(""));
     }
 }
