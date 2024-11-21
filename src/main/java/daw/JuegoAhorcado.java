@@ -3,8 +3,10 @@
  */
 package daw;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 /**
  *
@@ -43,11 +45,11 @@ public class JuegoAhorcado {
                             eliminarAcentos(Palabras.getRandomWord());
                     vowel = getFirstVowel(wordToGuess);
                     userWord = hideWordToGuess(wordToGuess, vowel);
-                    
+
                     System.out.println(wordToGuess);
                     System.out.println(userWord);
-                    
-                    playGame(wordToGuess, userWord);
+
+                    playGame(wordToGuess, userWord, vowel);
                 }
                 case 3 ->
                     System.out.println("Hasta luego");
@@ -56,44 +58,123 @@ public class JuegoAhorcado {
             }
         } while (opcion != 3 && opcion != Integer.MIN_VALUE);
     }
-    
-    public static void playGame(String word, String userWord) {
-        int fallos = 0;
+
+    public static void playGame(String word, String userWord, char vowel) {
+        int fallos = 0, index = 0;
         String text = "", temp = "";
         char ch = Character.MIN_VALUE;
-        boolean isWord = false;
-        
+        boolean isWord = false, win = false;
+
+        ArrayList<Character> dispLetters = new ArrayList<>();
+        ArrayList<Character> usedLetters = new ArrayList<>();
+
+        dispLetters = fillAlphabetChar();
+        dispLetters.remove(Character.valueOf(vowel));
+        usedLetters.add(vowel);
+
         do {
-            do {                
+            do {
                 text = """
+                   Letras disponibles:
+                   %s
+                   Letras usadas:
+                   %s
+                       
                    Fallos: %d / 7.
                    
                    Estado de la palabra:
+                   
                    %s
                    
                    Introduce una letra:
-                   """.formatted(fallos, showStringWithSpaces(userWord));
+                   """.formatted(dispLetters.toString(), usedLetters.toString(),
+                        fallos, showStringWithSpaces(userWord));
                 temp = JOptionPane.showInputDialog(text);
-                
+
                 // Controlamos que le de a cancelar
                 if (Objects.isNull(temp)) {
                     temp = "";
                 }
-                
+
                 ch = temp.charAt(0);
-                
+
                 if (Character.isLetter(ch)) {
                     isWord = true;
-                    System.out.println("WORD");
                 } else {
                     JOptionPane.showMessageDialog(null, "No has introducido"
                             + " una letra.");
                 }
             } while (!isWord);
-            
-            
-            
-        } while (fallos < 7);
+
+            // buscamos la letra en la palabra
+            index = word.indexOf(ch);
+
+            if (index == -1) {
+                fallos++;
+                JOptionPane.showMessageDialog(null, "La letra NO se encuentra"
+                        + " en la palabra. Intentelo de nuevo.");
+            } else {
+                ArrayList<Integer> ocuIndexes = findAllOcurIndex(word, ch);
+                char[] arr = userWord.toCharArray();
+                
+                // Ponemos la letra en todos los sitios que corresponde, no solo
+                // en la primera ocurrencia
+                for (Integer i : ocuIndexes) {
+                    arr[i] = ch;
+                }
+                userWord = String.valueOf(arr);
+            }
+
+            // Compobamos si el juego ha terminado
+            if (userWord.equals(word)) {
+                win = true;
+                JOptionPane.showMessageDialog(null, "Has ganado!!");
+            } else if (fallos == 7) {
+                JOptionPane.showMessageDialog(null, "Has perdido :(");
+            } else {
+                // Hacemos el cambio de letra disponible a letra usada
+                dispLetters.remove(Character.valueOf(ch));
+                usedLetters.add(ch);
+            }
+        } while (fallos < 7 && !win);
+    }
+
+    /**
+     * Devuelve una lista con el numero de todas las posiciones donde se
+     * encuentre la vocal que hemos pasado dentro de una palabra
+     *
+     * @param word la palabra donde buscar la letra
+     * @param letter la letra que vamos a buscar
+     * @return una lista con todos los indices donde esta la letra dentro de la
+     * palabra
+     */
+    public static ArrayList<Integer> findAllOcurIndex(String word,
+            char letter) {
+        ArrayList<Integer> resList = new ArrayList<>();
+
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) == letter) {
+                resList.add(i);
+            }
+        }
+        return resList;
+    }
+
+    /**
+     * Rellena una lista que pasamos por referencia con todas las letras del
+     * abecedario en español (incluyendo ñ)
+     *
+     */
+    public static ArrayList<Character> fillAlphabetChar() {
+        ArrayList<Character> resList = new ArrayList<>();
+        Character[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+            'w', 'x', 'y', 'z'};
+
+        for (Character letter : letters) {
+            resList.add(letter);
+        }
+        return resList;
     }
 
     /**
@@ -111,16 +192,16 @@ public class JuegoAhorcado {
         }
         return Character.MIN_VALUE;
     }
-    
+
     /**
      * Devuelve la palabra que pasamos por parametro pero solo mostrando las
-     * vocales que coinciden con la vocal que hemos pasado tambien. Lo demas 
-     * lo pone como "_"
-     * 
+     * vocales que coinciden con la vocal que hemos pasado tambien. Lo demas lo
+     * pone como "_"
+     *
      * @param word la palabra que vamos a usar como referencia
      * @param vowel la vocal que tenemos que mantener
-     * @return  la palabra solo mostrando la vocal en su posicion conrrespondiente
-     *          que coincide con la palabra
+     * @return la palabra solo mostrando la vocal en su posicion
+     * conrrespondiente que coincide con la palabra
      */
     public static String hideWordToGuess(String word, char vowel) {
         String res = "";
@@ -134,7 +215,7 @@ public class JuegoAhorcado {
         }
         return res;
     }
-    
+
     /**
      * Pide al usuario, usando joption, una opcion mostrando un menu
      *
@@ -161,11 +242,11 @@ public class JuegoAhorcado {
         }
         return op;
     }
-    
+
     public static char getWordFromUser() {
         String res = "";
-        
-        do {            
+
+        do {
             res = JOptionPane.showInputDialog("Introduzca una letra: ");
         } while (true);
     }
