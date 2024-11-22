@@ -6,14 +6,13 @@ package daw;
 import java.util.ArrayList;
 import java.util.Objects;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 
 /**
  *
  * @author alvaro
  */
 public class JuegoAhorcado {
-
+    
     public static void main(String[] args) {
         String menu = """
                       --- Juego Ahorcado ---
@@ -24,31 +23,59 @@ public class JuegoAhorcado {
                       
                       Introduzaca un opcion:
                       """;
-
+        
         int opcion = 0;
         String wordToGuess = "";
         String userWord = "";
         char vowel = Character.MIN_VALUE;
-
+        
         do {
             opcion = getOptionFromUser(menu);
-
+            
             if (opcion == Integer.MIN_VALUE) {
                 break;
             }
-
+            
             switch (opcion) {
-                case 1 ->
-                    System.out.println("Op 1");
+                case 1 -> {
+                    boolean stop = false;
+                    
+                    do {
+                        wordToGuess = JOptionPane.showInputDialog("Introduce "
+                                + "la palabra para jugar: ");
+                        
+                        if (Objects.isNull(wordToGuess)) {
+                            stop = true;
+                        } else {
+                            vowel = getFirstVowel(wordToGuess);
+                            
+                            if (getFirstVowel(wordToGuess)
+                                    == Character.MIN_VALUE) {
+                                JOptionPane.showMessageDialog(null, "Error. La"
+                                        + " palabra para jugar tiene que "
+                                        + "contener al menos una vocal.");
+                            } else {
+                                stop = true;
+                            }
+                        }
+                    } while (!stop);
+                    
+                    System.out.println(wordToGuess);
+                    
+                    userWord = hideWordToGuess(wordToGuess, vowel);
+                    
+                    playGame(wordToGuess.toLowerCase(), userWord.toLowerCase(),
+                            vowel);
+                }
                 case 2 -> {
                     wordToGuess = Palabras.
                             eliminarAcentos(Palabras.getRandomWord());
                     vowel = getFirstVowel(wordToGuess);
                     userWord = hideWordToGuess(wordToGuess, vowel);
-
+                    
                     System.out.println(wordToGuess);
                     System.out.println(userWord);
-
+                    
                     playGame(wordToGuess, userWord, vowel);
                 }
                 case 3 ->
@@ -59,19 +86,28 @@ public class JuegoAhorcado {
         } while (opcion != 3 && opcion != Integer.MIN_VALUE);
     }
 
+    /**
+     * Juega una partida de ahoracado, el usuario va diciendo letras hasta que
+     * la palabra del usuario sea igual o haya gastado las siete vidas
+     *
+     * @param word palabra que tenemos que adivinar
+     * @param userWord palabra que va viendo el usuario
+     * @param vowel vocal que damos como pista, ya aparecera en la palabra del
+     * usuario
+     */
     public static void playGame(String word, String userWord, char vowel) {
         int fallos = 0, index = 0;
         String text = "", temp = "";
         char ch = Character.MIN_VALUE;
-        boolean isWord = false, win = false;
-
+        boolean isWord = false, win = false, forceExit = false;
+        
         ArrayList<Character> dispLetters = new ArrayList<>();
         ArrayList<Character> usedLetters = new ArrayList<>();
-
+        
         dispLetters = fillAlphabetChar();
         dispLetters.remove(Character.valueOf(vowel));
         usedLetters.add(vowel);
-
+        
         do {
             do {
                 text = """
@@ -93,22 +129,32 @@ public class JuegoAhorcado {
 
                 // Controlamos que le de a cancelar
                 if (Objects.isNull(temp)) {
-                    temp = "";
+                    // En caso de que pulse cancelar terminamos el juego
+                    System.out.println("Force exit");
+                    break;
+                } else if (temp.equals("")) {
+                    temp = "0";
                 }
-
+                
                 ch = temp.charAt(0);
-
+                
                 if (Character.isLetter(ch)) {
                     isWord = true;
                 } else {
                     JOptionPane.showMessageDialog(null, "No has introducido"
                             + " una letra.");
                 }
-            } while (!isWord);
+            } while (!isWord && !forceExit);
+            
+            // Cancelamos el juego
+            if (Objects.isNull(temp)) {
+                JOptionPane.showMessageDialog(null, "Juego cancelado.");
+                break;
+            }
 
             // buscamos la letra en la palabra
             index = word.indexOf(ch);
-
+            
             if (index == -1) {
                 fallos++;
                 JOptionPane.showMessageDialog(null, "La letra NO se encuentra"
@@ -116,7 +162,7 @@ public class JuegoAhorcado {
             } else {
                 ArrayList<Integer> ocuIndexes = findAllOcurIndex(word, ch);
                 char[] arr = userWord.toCharArray();
-                
+
                 // Ponemos la letra en todos los sitios que corresponde, no solo
                 // en la primera ocurrencia
                 for (Integer i : ocuIndexes) {
@@ -151,7 +197,7 @@ public class JuegoAhorcado {
     public static ArrayList<Integer> findAllOcurIndex(String word,
             char letter) {
         ArrayList<Integer> resList = new ArrayList<>();
-
+        
         for (int i = 0; i < word.length(); i++) {
             if (word.charAt(i) == letter) {
                 resList.add(i);
@@ -164,13 +210,14 @@ public class JuegoAhorcado {
      * Rellena una lista que pasamos por referencia con todas las letras del
      * abecedario en español (incluyendo ñ)
      *
+     * @return una lista con todas las letras del abecedario español
      */
     public static ArrayList<Character> fillAlphabetChar() {
         ArrayList<Character> resList = new ArrayList<>();
         Character[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
             'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
             'w', 'x', 'y', 'z'};
-
+        
         for (Character letter : letters) {
             resList.add(letter);
         }
@@ -226,29 +273,21 @@ public class JuegoAhorcado {
     public static int getOptionFromUser(String menu) {
         String tmp = "";
         int op = 0;
-
+        
         tmp = JOptionPane.showInputDialog(menu);
-
+        
         try {
             if (Objects.isNull(tmp)) {
                 return Integer.MIN_VALUE;
             }
-
+            
             op = Integer.parseInt(tmp);
-
+            
         } catch (NumberFormatException nfe) {
             JOptionPane.showMessageDialog(null, "Error, introduce una"
                     + " opcion valida.");
         }
         return op;
-    }
-
-    public static char getWordFromUser() {
-        String res = "";
-
-        do {
-            res = JOptionPane.showInputDialog("Introduzca una letra: ");
-        } while (true);
     }
 
     /**
