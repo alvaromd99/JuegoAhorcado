@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
  * @author alvaro
  */
 public class JuegoAhorcado {
-    
+
     public static void main(String[] args) {
         String menu = """
                       --- Juego Ahorcado ---
@@ -23,32 +23,32 @@ public class JuegoAhorcado {
                       
                       Introduzaca un opcion:
                       """;
-        
+
         int opcion = 0;
         String wordToGuess = "";
         String userWord = "";
         char vowel = Character.MIN_VALUE;
-        
+
         do {
             opcion = getOptionFromUser(menu);
-            
+
             if (opcion == Integer.MIN_VALUE) {
                 break;
             }
-            
+
             switch (opcion) {
                 case 1 -> {
                     boolean stop = false;
-                    
+
                     do {
                         wordToGuess = JOptionPane.showInputDialog("Introduce "
                                 + "la palabra para jugar: ");
-                        
+
                         if (Objects.isNull(wordToGuess)) {
                             stop = true;
                         } else {
                             vowel = getFirstVowel(wordToGuess);
-                            
+
                             if (getFirstVowel(wordToGuess)
                                     == Character.MIN_VALUE) {
                                 JOptionPane.showMessageDialog(null, "Error. La"
@@ -59,11 +59,17 @@ public class JuegoAhorcado {
                             }
                         }
                     } while (!stop);
-                    
+
+                    // Se termina el juego si el usuario le da a cancelar
+                    if (Objects.isNull(wordToGuess)) {
+                        JOptionPane.showMessageDialog(null, "Juego cancelado.");
+                        break;
+                    }
+
                     System.out.println(wordToGuess);
-                    
+
                     userWord = hideWordToGuess(wordToGuess, vowel);
-                    
+
                     playGame(wordToGuess.toLowerCase(), userWord.toLowerCase(),
                             vowel);
                 }
@@ -72,10 +78,10 @@ public class JuegoAhorcado {
                             eliminarAcentos(Palabras.getRandomWord());
                     vowel = getFirstVowel(wordToGuess);
                     userWord = hideWordToGuess(wordToGuess, vowel);
-                    
+
                     System.out.println(wordToGuess);
                     System.out.println(userWord);
-                    
+
                     playGame(wordToGuess, userWord, vowel);
                 }
                 case 3 ->
@@ -99,16 +105,17 @@ public class JuegoAhorcado {
         int fallos = 0, index = 0;
         String text = "", temp = "";
         char ch = Character.MIN_VALUE;
-        boolean isWord = false, win = false, forceExit = false;
-        
+        boolean isWord = false, win = false;
+
         ArrayList<Character> dispLetters = new ArrayList<>();
         ArrayList<Character> usedLetters = new ArrayList<>();
-        
+
         dispLetters = fillAlphabetChar();
         dispLetters.remove(Character.valueOf(vowel));
         usedLetters.add(vowel);
-        
+
         do {
+            isWord = false;
             do {
                 text = """
                    Letras disponibles:
@@ -130,22 +137,21 @@ public class JuegoAhorcado {
                 // Controlamos que le de a cancelar
                 if (Objects.isNull(temp)) {
                     // En caso de que pulse cancelar terminamos el juego
-                    System.out.println("Force exit");
                     break;
                 } else if (temp.equals("")) {
                     temp = "0";
                 }
-                
+
                 ch = temp.charAt(0);
-                
+
                 if (Character.isLetter(ch)) {
                     isWord = true;
                 } else {
                     JOptionPane.showMessageDialog(null, "No has introducido"
                             + " una letra.");
                 }
-            } while (!isWord && !forceExit);
-            
+            } while (!isWord);
+
             // Cancelamos el juego
             if (Objects.isNull(temp)) {
                 JOptionPane.showMessageDialog(null, "Juego cancelado.");
@@ -154,7 +160,7 @@ public class JuegoAhorcado {
 
             // buscamos la letra en la palabra
             index = word.indexOf(ch);
-            
+
             if (index == -1) {
                 fallos++;
                 JOptionPane.showMessageDialog(null, "La letra NO se encuentra"
@@ -197,7 +203,7 @@ public class JuegoAhorcado {
     public static ArrayList<Integer> findAllOcurIndex(String word,
             char letter) {
         ArrayList<Integer> resList = new ArrayList<>();
-        
+
         for (int i = 0; i < word.length(); i++) {
             if (word.charAt(i) == letter) {
                 resList.add(i);
@@ -217,7 +223,7 @@ public class JuegoAhorcado {
         Character[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
             'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
             'w', 'x', 'y', 'z'};
-        
+
         for (Character letter : letters) {
             resList.add(letter);
         }
@@ -273,16 +279,16 @@ public class JuegoAhorcado {
     public static int getOptionFromUser(String menu) {
         String tmp = "";
         int op = 0;
-        
+
         tmp = JOptionPane.showInputDialog(menu);
-        
+
         try {
             if (Objects.isNull(tmp)) {
                 return Integer.MIN_VALUE;
             }
-            
+
             op = Integer.parseInt(tmp);
-            
+
         } catch (NumberFormatException nfe) {
             JOptionPane.showMessageDialog(null, "Error, introduce una"
                     + " opcion valida.");
