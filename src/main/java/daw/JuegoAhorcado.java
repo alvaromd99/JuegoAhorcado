@@ -4,6 +4,7 @@
 package daw;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import javax.swing.JOptionPane;
 
@@ -219,15 +220,10 @@ public class JuegoAhorcado {
      * @return una lista con todas las letras del abecedario español
      */
     public static ArrayList<Character> fillAlphabetChar() {
-        ArrayList<Character> resList = new ArrayList<>();
         Character[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
             'k', 'l', 'm', 'n', 'ñ', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
             'w', 'x', 'y', 'z'};
-
-        for (Character letter : letters) {
-            resList.add(letter);
-        }
-        return resList;
+        return new ArrayList<>(Arrays.asList(letters));
     }
 
     /**
