@@ -66,7 +66,8 @@ public class JuegoAhorcado {
                         JOptionPane.showMessageDialog(null, "Juego cancelado.");
                         break;
                     }
-
+                    
+                    // ENSEÑAR LA PALABRA
                     System.out.println(wordToGuess);
 
                     userWord = hideWordToGuess(wordToGuess, vowel);
@@ -79,9 +80,9 @@ public class JuegoAhorcado {
                             eliminarAcentos(Palabras.getRandomWord());
                     vowel = getFirstVowel(wordToGuess);
                     userWord = hideWordToGuess(wordToGuess, vowel);
-
+                    
+                    // ENSEÑAR LA PALABRA
                     System.out.println(wordToGuess);
-                    System.out.println(userWord);
 
                     playGame(wordToGuess, userWord, vowel);
                 }
