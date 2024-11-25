@@ -66,7 +66,7 @@ public class JuegoAhorcado {
                         JOptionPane.showMessageDialog(null, "Juego cancelado.");
                         break;
                     }
-                    
+
                     // ENSEÑAR LA PALABRA
                     System.out.println(wordToGuess);
 
@@ -80,7 +80,7 @@ public class JuegoAhorcado {
                             eliminarAcentos(Palabras.getRandomWord());
                     vowel = getFirstVowel(wordToGuess);
                     userWord = hideWordToGuess(wordToGuess, vowel);
-                    
+
                     // ENSEÑAR LA PALABRA
                     System.out.println(wordToGuess);
 
@@ -188,7 +188,9 @@ public class JuegoAhorcado {
             } else {
                 // Hacemos el cambio de letra disponible a letra usada
                 dispLetters.remove(Character.valueOf(ch));
-                usedLetters.add(ch);
+                if (!usedLetters.contains(ch)) {
+                    usedLetters.add(ch);
+                }
             }
         } while (fallos < 7 && !win);
     }
